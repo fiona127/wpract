@@ -5,12 +5,12 @@ var dataPeople = [
         type: "A"
     },
     {
-        username: "Sam",
+        username: "sam",
         password: "please",
         type: "B"
     },
     {
-      username: "Annie",
+      username: "annie",
       password: "kitty",
       type: "C" 
     }
@@ -18,15 +18,40 @@ var dataPeople = [
 function submitInfo(){
     var user = document.getElementById('username').value
     var pass = document.getElementById('password').value
-    
-    for(var i = 0; i < dataPeople.length; i++) {
-        if(user == dataPeople[i].username && pass == dataPeople[i].password){
-            window.location.replace("index.html")
-            console.log("Welcome" + user)
-            return
+    let m = 0;
+    if (user != "" && pass != ""){
+        while (user == dataPeople[m].username && pass == dataPeople[m].password){
+            alert("Welcome "+user);
+            window.location.replace("index.html");
+            m++
         }
-        else {
-            return "Sorry. Incorrect username or password."
+        while (user == dataPeople[m].username && pass != dataPeople[m].password){
+            alert("Incorrect password.");
+            window.location.reload("login.html");
+            m++
+        }
+        while (user != dataPeople[m].username && pass == dataPeople[m].password){
+            alert("Incorrect username");
+            window.location.reload("login.html");
+            m++
+        }
+        while (user != dataPeople[m].username && pass != dataPeople[m].password){
+            alert("Incorrect username and password.");
+            window.location.reload("login.html");
+            m++
         }
     }
+    else{
+        alert("Please fill in the username and password fields");
+    }
+    //else if()
+    /*for(var i = 0; i < dataPeople.length; i++) {
+        if(user == dataPeople[i].username && pass == dataPeople[i].password){
+            window.location.replace("index.html");
+            alert("Welcome " + user);
+        }
+        else if(user != dataPeople[i].username || pass != dataPeople[i].password){
+             alert("Sorry. Incorrect username or password.")
+        }
+    }*/
 }
