@@ -19,7 +19,7 @@ function submitInfo(){
     var user = document.getElementById('username').value
     var pass = document.getElementById('password').value
     let m = 0;
-    if (user != "" && pass != ""){
+    /*if (user != "" && pass != ""){
         while (user == dataPeople[m].username && pass == dataPeople[m].password){
             alert("Welcome "+user);
             window.location.replace("index.html");
@@ -43,15 +43,20 @@ function submitInfo(){
     }
     else{
         alert("Please fill in the username and password fields");
-    }
-    //else if()
-    /*for(var i = 0; i < dataPeople.length; i++) {
-        if(user == dataPeople[i].username && pass == dataPeople[i].password){
-            window.location.replace("index.html");
-            alert("Welcome " + user);
-        }
-        else if(user != dataPeople[i].username || pass != dataPeople[i].password){
-             alert("Sorry. Incorrect username or password.")
-        }
     }*/
+    //else if()
+    for(var i = 0; i < dataPeople.length; i++) {
+        if(user == dataPeople[i].username && pass == dataPeople[i].password){
+            alert("Welcome " + user);
+            window.location.replace("index.html");
+        }
+        else if (user == dataPeople[i].username && pass != dataPeople[i].password){
+            alert("Incorrect password.");
+            window.location.reload("login.html");
+        }
+        else if(user != dataPeople[i].username && pass != dataPeople[i].password){
+            alert("Incorrect username and password.");
+            window.location.reload("login.html");
+        }
+    }
 }
