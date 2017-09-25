@@ -54,6 +54,10 @@ function submitInfo(){
             alert("Incorrect password.");
             window.location.reload("login.html");
         }
+        else if (user != dataPeople[i].username && pass == dataPeople[i].password){
+            alert("Incorrect username");
+            window.location.reload("login.html");
+        }
         else if(user != dataPeople[i].username && pass != dataPeople[i].password){
             alert("Incorrect username and password.");
             window.location.reload("login.html");
