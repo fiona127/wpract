@@ -1,0 +1,48 @@
+html{
+    height: 100%;
+}
+body{
+    background: url("https://worldstrides.com/wp-content/uploads/2015/07/12-Chureito-pagoda-and-Mount-Fuji-Japan.jpg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    text-align: center;
+}
+label{
+    display: block;
+    margin: 10px auto;
+}
+form label{
+    display: inline;
+}
+body h1{
+    color:black;
+}
+strong{
+    color: yellow;
+}
+section{
+    background-color: #DCDCDC;
+    border: white 3px dotted;
+    width: 80%;
+    margin: 5px auto;
+    color: black;
+    clear: right;
+    overflow: auto;
+}
+section h2{
+    color: black;
+}
+.error{
+    color: red;
+}
+input{
+    text-align: center;
+}
+.next{
+    background-color: white;
+    color: green;
+    border: 3px dotted;
+    width: 10%;
+    float: right;
+    margin: 5px 10px;
+}
