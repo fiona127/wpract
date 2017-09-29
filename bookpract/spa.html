@@ -1,37 +1,24 @@
 <!DOCTYPE html>
 <html>
    <head>
-       <title>SPA Ch1 Sect 1.2.4</title>
-       <style type="text/css">
-           body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #777;
-            }
-
-           #spa {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            bottom: 8px;
-            right: 8px;
-            border-radius: 8px 8px 0 8px;
-            background-color: #fff;
-            }
-
-           .spa-slider {
-            position: absolute;
-            bottom: 0;
-            right: 2px;
-            width: 300px;
-            height: 16px;
-            cursor: pointer;
-            border-radius: 8px 0 0 0;
-            background-color: #f00;
-            }
-       </style>
-       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+       <title>SPA Chapter 3</title>
+       <!--stylesheets -->
+       <link rel="stylesheet" href="css/spa.css" type="text/css" />
+       <link rel="stylesheet" href="css/spa.shell.css" type="text/css" />
+       
+       <!-- third-party javascript -->
+       <script type="text/javascript" src="js/jq/jquery-3.2.1.js"></script>
+       <script type="text/javascript" src="js/jq/jquery.uriAnchor.js"></script>
+       
+       <!--Our javascript -->
+       <script type="text/javascript" src="js/spa.js"></script>
+       <script type="text/javascript" src="js/spa.shell.js"></script>
+       <script>
+           $(function () { 
+               spa.initModule($('#spa'));
+           });
+       </script>
+       <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
        
        <script type="text/javascript">
        /* jslint browser: true, continue: true, devel: true, indent: 2, maxerr: 50, newcap: true, nomen: true,
@@ -105,7 +92,7 @@
         jQuery(document).ready(
             function () {spa.initModule(jQuery('#spa'));}
            );
-       </script>
+       </script>-->
    </head> 
    <body>
        <div id="spa"></div>
