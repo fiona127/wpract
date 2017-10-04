@@ -5,7 +5,7 @@ indent: 2, maxerr: 50, newcap: true, nomen: true,
 plusplus: true, regexp: true, sloppy: true, vars: false,
 white: true
 */
-//global $, spa
+/*global $, spa*/
 
 spa.shell = (function (){
     //Begin Module Scope Var
@@ -214,10 +214,10 @@ spa.shell = (function (){
                 s_chat_proposed = anchor_map_proposed.chat;
                 switch (s_chat_proposed) {
                     case 'open':
-                        toggleChat(false);
+                        toggleChat(true);
                     break;
                     case 'closed':
-                        toggleChat(true);
+                        toggleChat(false);
                     break;
                     default:
                         toggleChat(false);
@@ -257,6 +257,10 @@ spa.shell = (function (){
             $.uriAnchor.configModule({
                 schema_map : configMap.anchor_schema_map
             });
+            //configure and initialize feature modules
+            spa.chat.configModule({});
+            spa.chat.initModule(jqueryMap.$chat);
+            
             //Handle URI anchor change events. 
             //This is done /after/ all feature modules are configured
             // and initialized, otherwise they will not be ready to 

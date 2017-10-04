@@ -18,6 +18,15 @@
   white  : true
 */
 /*global jQuery */
+/*global $*/
+/*var anchorMap = {
+  profile: 'on',
+  _profile: {
+    uid: 'suzie',
+    status: 'green'
+  }
+};
+$.uriAnchor.setAnchor(anchorMap);*/
 
 (function ($) {
   $.uriAnchor = (function () {
