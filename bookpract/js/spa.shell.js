@@ -258,8 +258,8 @@ spa.shell = (function (){
                 schema_map : configMap.anchor_schema_map
             });
             //configure and initialize feature modules
-            spa.chat.configModule({});
-            spa.chat.initModule(jqueryMap.$chat);
+            spa.chat.configModule({}); //double check - could be error
+            spa.chat.initModule(jqueryMap.$chat); //dc - error?
             
             //Handle URI anchor change events. 
             //This is done /after/ all feature modules are configured
