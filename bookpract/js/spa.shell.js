@@ -8,7 +8,9 @@ white: true
 /*global $, spa*/
 
 spa.shell = (function (){
-    //Begin Module Scope Var
+    'use strict';
+    
+    //--------Begin Module Scope Variables----------
     var
         configMap = {
             anchor_schema_map:{
@@ -16,27 +18,30 @@ spa.shell = (function (){
             }, 
             resize_interval: 200,
             main_html: String()
-            + '<div class="spa-shell-head">'
-                + '<div class="spa-shell-head-logo"></div>'
-                + '<div class="spall-shell-head-acct"></div>'
-                + '<div class="spa-shell-head-search"></div>'
-            + '</div>'
-            + '<div class="spa-shell-main">'
-                + '<div class="spall-shell-main-nav"></div>'
-                + '<div class="spa-shell-main-content"></div>'
-            + '</div>'
-            + '<div class="spa-shell-foot"></div>'
-            + '<div class="spa-shell-modal"></div>',
-        },
+                + '<div class="spa-shell-head">'
+                    + '<div class="spa-shell-head-logo">'
+                        + '<h1> SPA </h1>'
+                        + '<p>javascript end to end </p>'
+                    +'</div>'
+                    + '<div class="spa-shell-head-acct"></div>'
+                +'</div>'
+                + '<div class="spa-shell-main">'
+                    + '<div class="spa-shell-main-nav"></div>'
+                    + '<div class="spa-shell-main-content"></div>'
+                + '</div>'
+                + '<div class="spa-shell-foot"></div>'
+                + '<div class="spa-shell-modal"></div>',
+            },
         stateMap = {
             $container: undefined,
             anchor_map: {},
             resize_idto:undefined
         },
         jqueryMap = {},
-        copyAnchorMap, setJqueryMap,  
-        changeAnchorPart, onHashchange, onResize, 
-        setChatAnchor, initModule;
+        copyAnchorMap, setJqueryMap, changeAnchorPart, 
+        onResize, onHashchange, 
+            onTapAcct, onLogin, onLogout, 
+            setChatAnchor, initModule;
         
         //End Module Scope Variable
         
@@ -111,74 +116,15 @@ spa.shell = (function (){
         
         setJqueryMap = function () {
             var $container = stateMap.$container;
-            jqueryMap = { $container : $container };
+            jqueryMap = { 
+                $container : $container, 
+                $acct: $container.find('.spa-shell-head-acct'),
+                $nav: $container.find('.spa-shell-main-nav')
+            };
         };
         //End DOM Method /setJquery Map/
         
-        /*
-        //Begin DOM method /toggleChat/
-        //Purpose: Extends or retracts chat slider
-        //Arguments:
-        // * do_extend - if true, extends slider; if false retracts
-        // * callback - optional function to execute at end of animation
-        //Settings:
-        // *chat_extend_time, chat_retract_time
-        // * chat_extend_height, chat_retract_height
-        //Returns: boolean
-        // *true - slider animation activated
-        // *false - slider animation not activated
-        
-        
-        toggleChat = function (do_extend, callback){
-            var
-                px_chat_ht = jqueryMap.$chat.height(),
-                is_open = px_chat_ht === configMap.chat_extend_height,
-                is_closed = px_chat_ht === configMap.chat_retract_height,
-                is_sliding = ! is_open && ! is_closed;
-            
-            //avoid race condition
-            if (is_sliding){ return false;}
-            
-            //Begin extend chat slider
-            if (do_extend){
-                jqueryMap.$chat.animate(
-                    {height: configMap.chat_extend_height},
-                    configMap.chat_extend_time,
-                    function(){
-                        if (callback){ callback(jqueryMap.$chat); }
-                    }
-                );
-                return true;
-            }
-            //End extend chat slider
-            
-            //Begin retract chat slider
-            jqueryMap.$chat.animate(
-                {height: configMap.chat_retract_height},
-                configMap.chat_retract_time,
-                function () {
-                    if (callback){ callback(jqueryMap.$chat); }
-                }
-            );
-            return true;
-            // End retract chat slider
-        };
-        
-        //End DOM Methods /toggleChat/
-        */
-      
-        
-        //Begin Event Handlers
-        /*onClickChat = function(event){
-            if (toggleChat(stateMap.is_chat_retracted)){
-                $.uriAnchor.setAnchor({
-                    chat : (stateMap.is_chat_retracted? 'open': 'closed')
-                });
-            }
-            return false;
-        };*/
-        
-        
+       
         //Begin Event handler /onHashchange/
         //Purpose: Handles the hashchange event
         //Arguments:
@@ -262,6 +208,27 @@ spa.shell = (function (){
         };
         //End Event handler /onResize/
         
+        onTapAcct = function (event){
+            var acct_text, user_name, user = spa.model.people.get_user();
+            if (user.get_is_anon() ){
+                user_name = prompt('Please sign-in');
+                spa.model.people.login(user_name);
+                jqueryMap.$acct.text('...processing...');
+            }
+            else {
+                spa.model.people.logout();
+            }
+            return false;
+        };
+        
+        onLogin = function (event, login_user){
+            jqueryMap.$acct.text(login_user.name);
+        };
+        
+        onLogout = function (event, logout_user){
+            jqueryMap.$acct.text('Please sign-in');
+        };
+        
         //End Event Handlers
         
         //Begin Callbacks
@@ -333,6 +300,13 @@ spa.shell = (function (){
                 .bind('resize', onResize)
                     .bind('hashchange', onHashchange)
                     .trigger('hashchange');
+        
+            $.gevent.subscribe($container, 'spa-login', onLogin);
+            $.gevent.subscribe($container, 'spa-logout', onLogout);
+            
+            jqueryMap.$acct
+                .text('Please sign-in')
+                .bind('utap', onTapAcct);
         };
         //End Public method /initModule/
         return { initModule: initModule };
