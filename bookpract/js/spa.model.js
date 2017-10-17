@@ -215,7 +215,7 @@ spa.model = (function(){
          name: person_map.name
        };
        
-       if (chatee && chatee.id +++ make_person_map.id){
+       if (chatee && chatee.id === make_person_map.id){
          is_chatee_online = true;
        }
        makePerson(make_person_map);
@@ -235,11 +235,14 @@ spa.model = (function(){
     _publish_updatechat = function(arg_list){
       var msg_map = arg_list[0];
       if (!chatee){set_chatee(msg_map.sender_id);}
-      else if(msg_map.sender_id !== chatee.id){ set_chatee(msg_map.sender_id);}
+      else if(msg_map.sender_id !== stateMap.user.id && msg_map.sender_id !== chatee.id)
+        { set_chatee(msg_map.sender_id);}
+      $.gevent.publish('sppa-updatechat', [msg_map]);
     };
      
     _leave_chat = function(){
      var sio = isFakeData? spa.fake.mockSio: spa.data.getSio();
+     chatee = null;
      stateMap.is_connected = false;
      if(sio){sio.emit('leavechat');}
     };

@@ -20,13 +20,11 @@ function submitInfo(){
     var pass = document.getElementById('password').value
     
     for(var i = 0; i < dataPeople.length; i++) {
-        if(user == dataPeople[i].username && pass == dataPeople[i].password){
-            window.location.replace("index.html")
-            console.log("Welcome" + user)
-            return
-        }
-        else {
-            return "Sorry. Incorrect username or password."
+        if(user == dataPeople[i].username){
+            if (pass == dataPeople[i].password){
+                window.location.replace("index.html");
+                window.alert("Welcome " + user);
+            }
         }
     }
 }
