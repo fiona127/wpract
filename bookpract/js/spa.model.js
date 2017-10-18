@@ -24,6 +24,46 @@ spa.model = (function(){
     personProto, makeCid, clearPeopleDb, completeLogin, 
     makePerson, removePerson, people, chat, initModule;
     
+  // The people object API
+  // ---------------------
+  // The people object is available at spa.model.people.
+  // The people object provides methods and events to manage
+  // a collection of person objects. Its public methods include:
+  //   * get_user() - return the current user person object.
+  //     If the current user is not signed-in, an anonymous person
+  //     object is returned.
+  //   * get_db() - return the TaffyDB database of all the person
+  //     objects - including the current user - presorted.
+  //   * get_by_cid( <client_id> ) - return a person object with
+  //     provided unique id.
+  //   * login( <user_name> ) - login as the user with the provided
+  //     user name. The current user object is changed to reflect
+  //     the new identity. Successful completion of login
+  //     publishes a 'spa-login' global custom event.
+  //   * logout()- revert the current user object to anonymous.
+  //     This method publishes a 'spa-logout' global custom event.
+  //
+  // jQuery global custom events published by the object include:
+  //   * spa-login - This is published when a user login process
+  //     completes. The updated user object is provided as data.
+  //   * spa-logout - This is published when a logout completes.
+  //     The former user object is provided as data.
+  //
+  // Each person is represented by a person object.
+  // Person objects provide the following methods:
+  //   * get_is_user() - return true if object is the current user
+  //   * get_is_anon() - return true if object is anonymous
+  //
+  // The attributes for a person object include:
+  //   * cid - string client id. This is always defined, and
+  //     is only different from the id attribute
+  //     if the client data is not synced with the backend.
+  //   * id - the unique id. This may be undefined if the
+  //     object is not synced with the backend.
+  //   * name - the string name of the user.
+  //   * css_map - a map of attributes used for avatar
+  //     presentation.
+  
   personProto = {
     get_is_user: function () {
       return this.cid === stateMap.user.cid;
@@ -100,6 +140,7 @@ spa.model = (function(){
   
   people = (function(){
     var get_by_cid, get_db, get_user, login, logout;
+    
     get_by_cid = function(cid){
       return stateMap.people_cid_map[cid];
     };
@@ -127,15 +168,14 @@ spa.model = (function(){
     };
     
     logout = function () {
-      var is_removed, user = stateMap.user;
+      var user = stateMap.user;
       // when we add chat, we should leave the chatroom here
       
       chat._leave();
-      is_removed = removePerson(user);
       stateMap.user = stateMap.anon_user;
+      clearPeopleDb();
       
       $.gevent.publish('spa-logout', [user]);
-      return is_removed;
     };
     
     return {
@@ -147,11 +187,7 @@ spa.model = (function(){
     };
   }());
   
-  /*people = {
-    get_db: function () {return stateMap.people_db;},
-    get_cid_map: function () {return stateMap.people_cid_map;}
-  };*/
-  
+
   //The chat object API
   //chat object available at spa.model.chat.
   // it provides methods and events to manage
@@ -169,6 +205,12 @@ spa.model = (function(){
   //    It publishes a 'spa-updatchat' global custom event. 
   //    If the user is anonymous or the chatee is null, it aborts 
   //    and returns false.
+  //  * update_avatar( <update_avtr_map> ) - send the
+  //    update_avtr_map to the backend. This results in an
+  //    'spa-listchange' event which publishes the updated
+  //    people list and avatar information (the css_map in the
+  //    person objects). The update_avtr_map must have the form
+  //    { person_id : person_id, css_map : css_map }.
   // jQuery global custom events published by the object include:
   //  * spa-setchatee - This is published when a new chatee is set. map:
   //      {old_chatee: <old_chatee_person_object>,
@@ -187,40 +229,43 @@ spa.model = (function(){
     var
       _publish_listchange, _publish_updatechat,
       _update_list, _leave_chat, 
-      get_chatee, join_chat, send_msg, set_chatee, chatee = null;
+      get_chatee, join_chat, send_msg, set_chatee, update_avatar,
+      chatee = null;
       
      //Begin internal methods
     _update_list = function(arg_list){
-      var i, person_map, make_person_map,
+      var i, person_map, make_person_map, person,
        people_list = arg_list[0],
        is_chatee_online = false;
        
-     clearPeopleDb();
+      clearPeopleDb();
      
-     PERSON:
-     for (i=0; i < people_list.length; i++){
-       person_map = people_list[i];
-       if (!person_map.name) {continue PERSON;}
+      PERSON:
+      for (i=0; i < people_list.length; i++){
+        person_map = people_list[i];
+        if (!person_map.name) {continue PERSON;}
        
-       //if user defined, update css_map and skip remainder
-       if (stateMap.user && stateMap.user.id === person_map._id){
-         stateMap.user.css_map = person_map.css_map;
-         continue PERSON;
-       }
+        //if user defined, update css_map and skip remainder
+        if (stateMap.user && stateMap.user.id === person_map._id){
+          stateMap.user.css_map = person_map.css_map;
+          continue PERSON;
+        }
        
-       make_person_map = {
-         cid: person_map._id,
-         css_map: person_map.css_map,
-         id: person_map._id,
-         name: person_map.name
-       };
+        make_person_map = {
+          cid: person_map._id,
+          css_map: person_map.css_map,
+          id: person_map._id,
+          name: person_map.name
+        };
        
-       if (chatee && chatee.id === make_person_map.id){
-         is_chatee_online = true;
-       }
-       makePerson(make_person_map);
+        if (chatee && chatee.id === make_person_map.id){
+           is_chatee_online = true;
+           chatee = person;
+        }
      }
+     
      stateMap.people_db.sort('name');
+     
      //If chatee is no longer online, we unset the chatee
      //which triggers the 'spa-setchatee' global event
      if (chatee && !is_chatee_online){set_chatee('');}
@@ -235,10 +280,12 @@ spa.model = (function(){
     _publish_updatechat = function(arg_list){
       var msg_map = arg_list[0];
       if (!chatee){set_chatee(msg_map.sender_id);}
-      else if(msg_map.sender_id !== stateMap.user.id && msg_map.sender_id !== chatee.id)
+      else if(msg_map.sender_id !== stateMap.user.id 
+        && msg_map.sender_id !== chatee.id)
         { set_chatee(msg_map.sender_id);}
-      $.gevent.publish('sppa-updatechat', [msg_map]);
+      $.gevent.publish('spa-updatechat', [msg_map]);
     };
+    //End internal methods
      
     _leave_chat = function(){
      var sio = isFakeData? spa.fake.mockSio: spa.data.getSio();
@@ -276,11 +323,13 @@ spa.model = (function(){
         sender_id: stateMap.user.id,
         msg_text: msg_text
       };
+      
       // we published updatechat so we can show our outgoing messages
       _publish_updatechat([msg_map]);
       sio.emit('updatechat', msg_map);
       return true;
     };
+    
     set_chatee = function(person_id){
       var new_chatee;
       new_chatee = stateMap.people_cid_map[person_id];
@@ -298,13 +347,29 @@ spa.model = (function(){
       chatee = new_chatee;
       return true;
     };
-     
+    
+    // avatar_update_map should have the form:
+    // { person_id : <string>, css_map : {
+    //   top : <int>, left : <int>,
+    //   'background-color' : <string>
+    // }};
+    //
+    
+    update_avatar = function(avatar_update_map){
+      var sio = isFakeData? spa.fake.mockSio: spa.data.getSio();
+      if (sio) {
+        sio.emit('updateavatar', avatar_update_map);
+      }
+    };
+    
+    
     return {
       _leave: _leave_chat,
       get_chatee: get_chatee,
       join: join_chat,
       send_msg: send_msg,
-      send_chatee: setchatee
+      set_chatee: setchatee,
+      update_avatar: update_avatar
     };
       
   }());
@@ -320,18 +385,6 @@ spa.model = (function(){
     });
     stateMap.user = stateMap.anon_user;
     
-    /*if (isFakeData){
-      people_list = spa.fake.getPeopleList();
-      for(i=0; i < people_list.length; i++){
-        person_map = people_list[i];
-        makePerson({
-          cid: person_map._id,
-          css_map: person_map.css_map,
-          id: person_map._id,
-          name: person_map.name
-        });
-      }
-    }*/
   };
   
   return {
