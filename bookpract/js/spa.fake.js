@@ -56,7 +56,7 @@ spa.fake=(function(){
       //respond to 'adduser' event with 'userupdate'
       // callback after a 3s delay
       
-      var person_map;
+      var person_map, i;
       
       if (msg_type === 'adduser' && callback_map.userupdate){
         setTimeout(function (){
@@ -102,7 +102,7 @@ spa.fake=(function(){
           }
         }
       //execute callback for the 'listchagne' message
-      callback_map.listchange([peopleList]);
+        callback_map.listchange([peopleList]);
       }
     };
     

@@ -229,20 +229,22 @@ spa.model = (function(){
     var
       _publish_listchange, _publish_updatechat,
       _update_list, _leave_chat, 
-      get_chatee, join_chat, send_msg, set_chatee, update_avatar,
+      get_chatee, join_chat, send_msg, 
+      set_chatee, update_avatar, 
       chatee = null;
       
      //Begin internal methods
     _update_list = function(arg_list){
       var i, person_map, make_person_map, person,
-       people_list = arg_list[0],
-       is_chatee_online = false;
+        people_list = arg_list[0],
+        is_chatee_online = false;
        
       clearPeopleDb();
      
       PERSON:
       for (i=0; i < people_list.length; i++){
         person_map = people_list[i];
+        
         if (!person_map.name) {continue PERSON;}
        
         //if user defined, update css_map and skip remainder
@@ -257,18 +259,20 @@ spa.model = (function(){
           id: person_map._id,
           name: person_map.name
         };
-       
-        if (chatee && chatee.id === make_person_map.id){
-           is_chatee_online = true;
-           chatee = person;
+        
+        person = makePerson(make_person_map);
+        
+        if(chatee && chatee.id === make_person_map.id){
+          is_chatee_online = true;
+          chatee = person;
         }
-     }
+      }
      
-     stateMap.people_db.sort('name');
+      stateMap.people_db.sort('name');
      
      //If chatee is no longer online, we unset the chatee
      //which triggers the 'spa-setchatee' global event
-     if (chatee && !is_chatee_online){set_chatee('');}
+      if (chatee && !is_chatee_online){set_chatee('');}
     };
     
     _publish_listchange = function (arg_list){
