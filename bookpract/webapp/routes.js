@@ -1,5 +1,5 @@
 // routes.js
-/*jslint         browser : true, continue : true,
+/*jslint         node: true, continue : true,
   devel  : true, indent  : 2,    maxerr   : 50,
   newcap : true, nomen   : true, plusplus : true,
   regexp : true, sloppy  : true, vars     : false,
@@ -37,7 +37,8 @@ configRoutes=function(app, server){
     app.get('/:obj_type/read/:id([0-9]+)', function(request, response){
         //response.contentType('json');
         response.send({
-            title: 'user with id' + request.params.id + ' found'
+            title: request.params.obj_type + ' with id' 
+                + request.params.id + ' found'
         });
     });
 
@@ -45,7 +46,8 @@ configRoutes=function(app, server){
         function(request, response){
             //response.contentType('json');
             response.send({
-                title: request.params.obj_type + ' with id '+ request.params.id+' updated'
+                title: request.params.obj_type + ' with id '
+                    + request.params.id+' updated'
             });
         }
     );
@@ -54,7 +56,8 @@ configRoutes=function(app, server){
         function(request,response){
             //response.contentType('json');
             response.send({
-                title: request.params.obj_type+ ' with id '+request.params.id+' deleted'
+                title: request.params.obj_type+ ' with id '
+                    +request.params.id+' deleted'
             });
         }
     );

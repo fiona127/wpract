@@ -17,7 +17,6 @@ var
     app = express(),
     server = http.createServer(app);
 
-routes();
 //-----------End Module Scope Variables
 
 //--------------begin Server Configuration---
@@ -25,11 +24,12 @@ routes();
 app.configure(function(){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
+    app.use(express.basicAuth('user', 'spa'));
     app.use(express.static(__dirname+'/public'));
     app.use(app.router);
 });
 
-app.configure('development',function(){
+app.configure('development', function(){
     app.use(express.logger());
     app.use(express.errorHandler({
         dumpExceptions: true,
@@ -40,6 +40,20 @@ app.configure('development',function(){
 app.configure('production', function(){
     app.use(express.errorHandler() );
 });
+
+routes.configRoutes(app, server);
+
+//------End Server Configuration -----------
+
+//---------Begin Start Server--------
+server.listen(3000);
+console.log(
+    'Express server listening on port %d in %s mode',
+    server.address().port, app.settings.env
+);
+//----------End Start Server--------
+
+/*
 
 //all configurations below are for routes
 
@@ -90,14 +104,7 @@ app.get('/:obj_type/delete/:id([0-9]+)',
 
 //-------End Server Configuration----------
 
-//---------Begin Start Server--------
-server.listen(3000);
-console.log(
-    'Express server listening on port %d in %s mode',
-    server.address().port, app.settings.env
-);
-//----------End Start Server--------
-/*
+
 //--------Begin Server Congiguration -----------------
 app.get('/', function(request, response){
     response.send('Hello Express');
@@ -126,4 +133,7 @@ server = http.createServer(function(request,response){
     response.end(response_text);
 }).listen(3000);
 */
-console.log('Listening on port %d', server.address().port);
+
+
+
+//console.log('Listening on port %d', server.address().port);
