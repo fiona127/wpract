@@ -1,5 +1,5 @@
 /* app.js
- * Express Server with routes module
+ * Express Server with routing
 */
 /*jslint         browser : true, continue : true,
   devel  : true, indent  : 2,    maxerr   : 50,
